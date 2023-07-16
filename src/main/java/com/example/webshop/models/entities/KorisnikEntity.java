@@ -1,5 +1,7 @@
 package com.example.webshop.models.entities;
 
+import com.example.webshop.models.enums.Role;
+import com.example.webshop.models.enums.UserStatus;
 import lombok.*;
 
 import javax.persistence.*;
@@ -36,11 +38,13 @@ public class KorisnikEntity {
     @Column(name = "email")
     private String email;
     @Basic
-    @Column(name = "rola")
-    private Boolean rola;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "rola", nullable = false)
+    private Role rola;
     @Basic
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "status")
-    private Boolean status;
+    private UserStatus status;
     @OneToMany(mappedBy = "korisnik_komentar")
     private List<KomentarEntity> komentars;
     @OneToMany(mappedBy = "korisnik")
