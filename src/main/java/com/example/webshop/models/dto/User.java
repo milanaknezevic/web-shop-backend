@@ -5,7 +5,7 @@ import com.example.webshop.models.enums.UserStatus;
 import lombok.Data;
 
 @Data
-public class Korisnik {
+public class User {
     private Integer id;
     private String ime;
     private String prezime;

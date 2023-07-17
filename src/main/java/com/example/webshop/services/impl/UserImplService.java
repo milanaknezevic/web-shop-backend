@@ -1,13 +1,16 @@
 package com.example.webshop.services.impl;
 
-import com.example.webshop.models.dto.Korisnik;
+import com.example.webshop.exceptions.ConflictException;
+import com.example.webshop.exceptions.NotFoundException;
+import com.example.webshop.models.dto.User;
 import com.example.webshop.models.entities.KorisnikEntity;
 import com.example.webshop.models.enums.Role;
 import com.example.webshop.models.enums.UserStatus;
-import com.example.webshop.repositories.KorisnikRepository;
-import com.example.webshop.services.KorisnikService;
+import com.example.webshop.models.requests.SignUpRequest;
+import com.example.webshop.repositories.UserRepository;
+import com.example.webshop.services.AuthService;
+import com.example.webshop.services.UserService;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +26,12 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class KorisnikImplService implements KorisnikService {
+public class UserImplService implements UserService {
 
-    public final KorisnikRepository korisnikRepository;
+    public final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
+    private final AuthService authService;
 
 
     @Value("${authorization.default.first-name:}")
@@ -44,18 +47,23 @@ public class KorisnikImplService implements KorisnikService {
     @Value("${authorization.default.email:}")
     private String defaultEmail;
 
-    public KorisnikImplService(KorisnikRepository korisnikRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
-        this.korisnikRepository = korisnikRepository;
-        this.modelMapper = modelMapper;
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
-    }
+
     @PersistenceContext
     private EntityManager manager;
+
+    public UserImplService(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, AuthService authService)
+    {
+        this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
+        this.passwordEncoder = passwordEncoder;
+
+        this.authService = authService;
+    }
+
     @PostConstruct
     public void postConstruct() {
 
-        if (korisnikRepository.count() == 0) {
+        if (userRepository.count() == 0) {
             KorisnikEntity userEntity = new KorisnikEntity();
             userEntity.setIme(defaultFirstName);
             userEntity.setPrezime(defaultLastName);
@@ -65,12 +73,33 @@ public class KorisnikImplService implements KorisnikService {
             userEntity.setGrad(defaultCity);
             userEntity.setStatus(UserStatus.ACTIVE);
             userEntity.setRola(Role.ADMIN);
-            korisnikRepository.saveAndFlush(userEntity);
+            userRepository.saveAndFlush(userEntity);
         }
     }
 
     @Override
-    public List<Korisnik> findAll() {
-        return korisnikRepository.findAll().stream().map(l->modelMapper.map(l,Korisnik.class)).collect(Collectors.toList());
+    public List<User> findAll() {
+        return userRepository.findAll().stream().map(l->modelMapper.map(l, User.class)).collect(Collectors.toList());
+    }
+
+
+
+    @Override
+    public User findById(Integer id) {
+        return modelMapper.map(userRepository.findById(id).orElseThrow(NotFoundException::new),User.class);
+    }
+
+    @Override
+    public void signUp(SignUpRequest request) {
+        if (userRepository.existsByKorisnickoIme(request.getKorisnickoIme()))
+            throw new ConflictException();
+        KorisnikEntity entity = modelMapper.map(request, KorisnikEntity.class);
+        entity.setLozinka(passwordEncoder.encode(entity.getLozinka()));
+        entity.setStatus(UserStatus.REQUESTED);
+        entity.setRola(Role.OBICNI_KORISNIK);
+
+        entity=userRepository.saveAndFlush(entity);
+        authService.sendActivationCode(entity.getKorisnickoIme(),entity.getEmail());
+       // User user = insert(entity, Korisnik.class);
     }
 }
