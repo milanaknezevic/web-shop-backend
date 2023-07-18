@@ -19,5 +19,8 @@ public class ProizvodAtributEntity {
     @ManyToOne
     @JoinColumn(name = "atribut_id", referencedColumnName = "id", nullable = false)
     private AtributEntity atribut;
+    @Basic
+    @Column(name = "vrijednost", nullable = false, length = 45)
+    private String vrijednost;
 
 }

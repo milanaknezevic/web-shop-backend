@@ -1,12 +1,11 @@
 package com.example.webshop.models.entities;
 
-import lombok.*;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 @Data
 @Entity
@@ -34,14 +33,13 @@ public class ProizvodEntity {
     @Basic
     @Column(name = "lokacija")
     private String lokacija;
-
-
     @Basic
     @Column(name = "zavrsena_ponuda")
     private Integer zavrsenaPonuda;
     @Basic
     @Column(name = "datum_kreiranja")
     private Date datumKreiranja;
+
     @OneToMany(mappedBy = "proizvod_komentar")
     private List<KomentarEntity> komentars;
     @ManyToOne
