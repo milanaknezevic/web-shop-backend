@@ -1,9 +1,20 @@
 {
   "rules": [
     {
+      "methods": ["GET,PUT"],
+      "pattern": "/users/*",
+      "roles": ["ADMIN"]
+    },
+    {
+      "methods": ["GET,PUT"],
+      "pattern": "/users/*/change-password",
+      "roles": ["ADMIN"]
+    },
+    {
       "methods": ["POST"],
-      "pattern": "/korisnici/*",
+      "pattern": "/messages",
       "roles": ["ADMIN"]
     }
   ]
+
 }

@@ -10,7 +10,7 @@ public class Comment {
     private Date datum;
     private String pitanje;
     private String odgovor;
-    private User korisnik_komentar;
-    private Product proizvod_komentar;
+   private User korisnik_komentar;
+   // private Product proizvod_komentar;
 
 }

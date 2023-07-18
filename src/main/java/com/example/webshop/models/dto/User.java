@@ -10,7 +10,6 @@ public class User {
     private String ime;
     private String prezime;
     private String korisnickoIme;
-    private String lozinka;
     private String grad;
     private String avatar;
     private String email;
