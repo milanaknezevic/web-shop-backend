@@ -18,8 +18,10 @@ public class KategorijaEntity {
     @Column(name = "naziv")
     private String naziv;
     @OneToMany(mappedBy = "kategorija")
+    @ToString.Exclude
     private List<AtributEntity> atribut;
     @OneToMany(mappedBy = "kategorija")
+    @ToString.Exclude
     private List<ProizvodEntity> proizvod;
 
 }

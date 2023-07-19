@@ -17,6 +17,7 @@ public interface UserService {
     User findById(Integer id);
 
     void signUp(SignUpRequest request);
+    User activateAccount(String username);
 
     Page<Product> getAllProductsForBuyer(Pageable page, Authentication authentication);
 

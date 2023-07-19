@@ -14,6 +14,16 @@
       "methods": ["POST"],
       "pattern": "/messages",
       "roles": ["ADMIN"]
+    },
+    {
+      "methods": ["POST"],
+      "pattern": "/products",
+      "roles": ["ADMIN"]
+    },
+    {
+      "methods": ["GET"],
+      "pattern": "/products/*",
+      "roles": ["ADMIN"]
     }
   ]
 

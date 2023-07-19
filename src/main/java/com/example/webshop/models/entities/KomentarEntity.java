@@ -24,9 +24,11 @@ public class KomentarEntity {
     @Column(name = "odgovor")
     private String odgovor;
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(name = "korisnik_id", referencedColumnName = "id", nullable = false)
     private KorisnikEntity korisnik_komentar;
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(name = "proizvod_id", referencedColumnName = "id", nullable = false)
     private ProizvodEntity proizvod_komentar;
 

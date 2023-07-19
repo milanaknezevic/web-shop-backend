@@ -1,6 +1,8 @@
 package com.example.webshop.controllers;
 
 import com.example.webshop.models.dto.LoginResponse;
+import com.example.webshop.models.dto.User;
+import com.example.webshop.models.requests.AccountActivationRequest;
 import com.example.webshop.models.requests.LoginRequest;
 import com.example.webshop.models.requests.SignUpRequest;
 import com.example.webshop.services.AuthService;
@@ -30,6 +32,14 @@ public class AuthController {
     {
         userService.signUp(request);
     }
-
+    @PostMapping("activeAccount")
+    public User activeAccount(@RequestBody @Valid AccountActivationRequest accountActivationRequest)
+    {
+        if(authService.activateAccount(accountActivationRequest))
+        {
+            return userService.activateAccount(accountActivationRequest.getKorisnickoIme());
+        }
+        return null;
+    }
 
 }

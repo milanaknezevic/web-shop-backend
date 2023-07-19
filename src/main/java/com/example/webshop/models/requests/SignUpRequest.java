@@ -18,12 +18,13 @@ public class SignUpRequest {
     @NotBlank
     private String korisnickoIme;
     @NotBlank
+    private String lozinka;
+    @NotBlank
     private String grad;
     private String avatar;
     @NotBlank
     @Email
     private String email;
-    @NotNull
-    private Role rola;
+
 
 }

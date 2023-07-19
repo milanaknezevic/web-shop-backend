@@ -46,12 +46,16 @@ public class KorisnikEntity {
     @Column(name = "status")
     private UserStatus status;
     @OneToMany(mappedBy = "korisnik_komentar")
+    @ToString.Exclude
     private List<KomentarEntity> komentars;
     @OneToMany(mappedBy = "korisnik")
+    @ToString.Exclude
     private List<PorukaEntity> porukas;
     @OneToMany(mappedBy = "prodavac")
+    @ToString.Exclude
     private List<ProizvodEntity> proizvodsByProdavac;
     @OneToMany(mappedBy = "kupac")
+    @ToString.Exclude
     private List<ProizvodEntity> proizvodsByKupac;
 
 }

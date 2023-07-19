@@ -17,6 +17,7 @@ public class SlikaEntity {
     @Column(name = "slika_proizvoda")
     private String slikaProizvoda;
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(name = "proizvod_id", referencedColumnName = "id", nullable = false)
     private ProizvodEntity proizvod;
 

@@ -21,9 +21,11 @@ public class AtributEntity {
     @Column(name = "tip")
     private String tip;
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(name = "kategorija_id", referencedColumnName = "id", nullable = false)
     private KategorijaEntity kategorija;
     @OneToMany(mappedBy = "atribut")
+    @ToString.Exclude
     private List<ProizvodAtributEntity> proizvod_atribut;
 
 }

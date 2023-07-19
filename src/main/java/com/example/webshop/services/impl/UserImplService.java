@@ -95,7 +95,7 @@ public class UserImplService implements UserService {
 
     @Override
     public void signUp(SignUpRequest request) {
-        if (userRepository.existsByKorisnickoIme(request.getKorisnickoIme()))
+        if (userRepository.existsByKorisnickoIme(request.getKorisnickoIme()) && userRepository.existsByEmail(request.getEmail()))
             throw new ConflictException();
         KorisnikEntity entity = modelMapper.map(request, KorisnikEntity.class);
         entity.setLozinka(passwordEncoder.encode(entity.getLozinka()));
@@ -104,7 +104,15 @@ public class UserImplService implements UserService {
 
         entity = userRepository.saveAndFlush(entity);
         authService.sendActivationCode(entity.getKorisnickoIme(), entity.getEmail());
-        // User user = insert(entity, Korisnik.class);
+
+    }
+
+    @Override
+    public User activateAccount(String username) {
+        KorisnikEntity userEntity = userRepository.findByKorisnickoImeAndStatus(username, UserStatus.REQUESTED).orElseThrow(NotFoundException::new);
+        userEntity.setStatus(UserStatus.ACTIVE);
+       // loggerService.saveLog("User: " + userEntity.getUsername() + " has activated profile.", this.getClass().getName());
+        return modelMapper.map(userRepository.saveAndFlush(userEntity), User.class);
     }
 
     @Override
@@ -114,9 +122,9 @@ public class UserImplService implements UserService {
     }
 
     @Override
-    public Page<Product> getAllProductsForSeller(Pageable page, Authentication authentication,Integer finished) {
+    public Page<Product> getAllProductsForSeller(Pageable page, Authentication authentication, Integer finished) {
         JwtUser user = (JwtUser) authentication.getPrincipal();
-        return userRepository.getAllProductsForSeller(page, user.getId(),finished).map(p -> modelMapper.map(p, Product.class));
+        return userRepository.getAllProductsForSeller(page, user.getId(), finished).map(p -> modelMapper.map(p, Product.class));
 
     }
 
@@ -134,15 +142,12 @@ public class UserImplService implements UserService {
 
     @Override
     public User updatePassword(Integer id, ChangePasswordRequest changePasswordRequest) {
-        KorisnikEntity korisnikEntity=userRepository.findById(id).orElseThrow(NotFoundException::new);
-        if(changePasswordRequest.getLozinka() == changePasswordRequest.getNewPassword() &&
-                passwordEncoder.matches(korisnikEntity.getLozinka(),changePasswordRequest.getOldPassword()))
-        {
+        KorisnikEntity korisnikEntity = userRepository.findById(id).orElseThrow(NotFoundException::new);
+        if (changePasswordRequest.getLozinka() == changePasswordRequest.getNewPassword() &&
+                passwordEncoder.matches(korisnikEntity.getLozinka(), changePasswordRequest.getOldPassword())) {
             korisnikEntity.setLozinka(passwordEncoder.encode(changePasswordRequest.getLozinka()));
-            return modelMapper.map(userRepository.saveAndFlush(korisnikEntity),User.class);
-        }
-        else
-        {
+            return modelMapper.map(userRepository.saveAndFlush(korisnikEntity), User.class);
+        } else {
             throw new BadRequestException();
         }
     }

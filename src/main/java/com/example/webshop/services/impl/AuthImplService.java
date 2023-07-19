@@ -54,27 +54,38 @@ public class AuthImplService implements AuthService {
                                     request.getKorisnickoIme(), request.getLozinka()
                             )
                     );
+            JwtUser user = (JwtUser) authenticate.getPrincipal();
             KorisnikEntity userEntity = userRepository.findByKorisnickoIme(request.getKorisnickoIme()).orElseThrow(NotFoundException::new);
-            if (userEntity.getStatus().equals(UserStatus.ACTIVE)) {
-                JwtUser user = (JwtUser) authenticate.getPrincipal();
+            response = modelMapper.map(userEntity, LoginResponse.class);
+            response.setToken(generateJwt(user));
+           // loggerService.saveLog("User " + user.getUsername() + " has logged in to the system", this.getClass().getName());
+            return response;
+            /* if (userEntity.getStatus().equals(UserStatus.ACTIVE)) {
                 response = modelMapper.map(userEntity, LoginResponse.class);
                 response.setToken(generateJwt(user));
                 return response;
             } else {
                  sendActivationCode(userEntity.getKorisnickoIme(),userEntity.getEmail());
-            }
-        } catch (Exception ex) {
-            //  LoggingUtil.logException(ex, getClass());
+            }*/
+        }catch (Exception ex) {
+           // LoggingUtil.logException(ex, getClass());
+            KorisnikEntity korisnikEntity = userRepository.findByKorisnickoIme(request.getKorisnickoIme()).orElseThrow(NotFoundException::new);
+           // loggerService.saveLog("Activation code has sent", this.getClass().getName());
+            sendActivationCode(korisnikEntity.getKorisnickoIme(), korisnikEntity.getEmail());
             throw new UnauthorizedException();
         }
-        return response;
+
     }
     @Override
-    public void sendActivationCode(String username,String mail) {
+    public void sendActivationCode(String username, String mail) {
         SecureRandom secureRandom = new SecureRandom();
-        String activationCode=String.valueOf(secureRandom.nextInt(9000)+1000);
-        codes.put(username,mail);
-        emailService.sendEmail(mail,activationCode);
+        String activationCode = String.valueOf(secureRandom.nextInt(9000) + 1000);
+        while(codes.containsKey(activationCode))
+        {
+            activationCode=String.valueOf(secureRandom.nextInt(9000)+1000);
+        }
+        codes.put(username, activationCode);
+        emailService.sendEmail(mail, activationCode);
 
     }
 

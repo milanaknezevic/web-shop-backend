@@ -13,10 +13,12 @@ public class ProizvodAtributEntity {
     private ProizvodAtributEntityPK id;
     @MapsId("proizvodId")
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(name = "proizvod_id", referencedColumnName = "id", nullable = false)
     private ProizvodEntity proizvod;
     @MapsId("atributId")
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(name = "atribut_id", referencedColumnName = "id", nullable = false)
     private AtributEntity atribut;
     @Basic

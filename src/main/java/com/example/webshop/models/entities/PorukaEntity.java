@@ -20,6 +20,7 @@ public class PorukaEntity {
     @Column(name = "procitana")
     private Boolean procitana;
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(name = "korisnik_id", referencedColumnName = "id", nullable = false)
     private KorisnikEntity korisnik;
 
