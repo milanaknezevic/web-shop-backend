@@ -1,7 +1,10 @@
 package com.example.webshop.controllers;
 
+import com.example.webshop.models.dto.Comment;
 import com.example.webshop.models.dto.Product;
+import com.example.webshop.models.requests.AnswerRequest;
 import com.example.webshop.models.requests.ProductRequest;
+import com.example.webshop.models.requests.QuestionRequest;
 import com.example.webshop.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,9 +30,32 @@ public class ProductController {
     public Page<Product> getAllProducts(Pageable page, Integer zavrsenaPonuda) {
         return productService.getAllProducts(page, zavrsenaPonuda);
     }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Product insert(@RequestBody @Valid ProductRequest productRequest, Authentication authentication)  {
-        return productService.insert(productRequest,authentication);
+    public Product insert(@RequestBody @Valid ProductRequest productRequest, Authentication authentication) {
+        return productService.insert(productRequest, authentication);
+    }
+
+    @PostMapping("/{id}/question")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Comment sendQuestion(@PathVariable Integer id, @RequestBody @Valid QuestionRequest questionRequest, Authentication authentication) {
+        return productService.sendQuestion(id, questionRequest, authentication);
+    }
+
+    @PutMapping("/{id}/answer")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Comment sendAnswer(@PathVariable Integer id, @RequestBody @Valid AnswerRequest answerRequest) {
+        return productService.sendAnswer(id, answerRequest);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable Integer id) {
+        productService.delete(id);
+    }
+
+    @PutMapping("/{id}")
+    public Product purchaseProduct(@PathVariable Integer id, Authentication authentication) {
+        return productService.purchaseProduct(id, authentication);
     }
 }

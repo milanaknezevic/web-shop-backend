@@ -6,7 +6,7 @@
       "roles": ["ADMIN"]
     },
     {
-      "methods": ["GET,PUT"],
+      "methods": ["POST"],
       "pattern": "/users/*/change-password",
       "roles": ["ADMIN"]
     },
@@ -18,6 +18,36 @@
     {
       "methods": ["POST"],
       "pattern": "/products",
+      "roles": ["ADMIN"]
+    },
+    {
+      "methods": ["POST"],
+      "pattern": "/products/*/question",
+      "roles": ["ADMIN"]
+    },
+    {
+      "methods": ["PUT"],
+      "pattern": "/products/*/answer",
+      "roles": ["ADMIN"]
+    },
+    {
+      "methods": ["PUT"],
+      "pattern": "/products/*",
+      "roles": ["ADMIN"]
+    },
+    {
+      "methods": ["GET"],
+      "pattern": "/categories/*/products",
+      "roles": ["ADMIN"]
+    },
+    {
+      "methods": ["GET"],
+      "pattern": "/categories/*",
+      "roles": ["ADMIN"]
+    },
+    {
+      "methods": ["GET"],
+      "pattern": "/categories",
       "roles": ["ADMIN"]
     },
     {

@@ -143,9 +143,9 @@ public class UserImplService implements UserService {
     @Override
     public User updatePassword(Integer id, ChangePasswordRequest changePasswordRequest) {
         KorisnikEntity korisnikEntity = userRepository.findById(id).orElseThrow(NotFoundException::new);
-        if (changePasswordRequest.getLozinka() == changePasswordRequest.getNewPassword() &&
-                passwordEncoder.matches(korisnikEntity.getLozinka(), changePasswordRequest.getOldPassword())) {
+        if (changePasswordRequest.getLozinka().equals(changePasswordRequest.getNewPassword())) {
             korisnikEntity.setLozinka(passwordEncoder.encode(changePasswordRequest.getLozinka()));
+           // loggerService.saveLog("User: " + userEntity.getUsername() + " has changed password.", this.getClass().getName());
             return modelMapper.map(userRepository.saveAndFlush(korisnikEntity), User.class);
         } else {
             throw new BadRequestException();

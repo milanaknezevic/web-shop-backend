@@ -1,17 +1,12 @@
 package com.example.webshop.services.impl;
 
 import com.example.webshop.exceptions.NotFoundException;
+import com.example.webshop.models.dto.Comment;
 import com.example.webshop.models.dto.JwtUser;
 import com.example.webshop.models.dto.Product;
 import com.example.webshop.models.entities.*;
-import com.example.webshop.repositories.AtributeRepository;
-import com.example.webshop.models.requests.ImageRequest;
-import com.example.webshop.models.requests.ProductAtributeRequest;
-import com.example.webshop.models.requests.ProductRequest;
-import com.example.webshop.repositories.ImageRepository;
-import com.example.webshop.repositories.ProductAtributeRepository;
-import com.example.webshop.repositories.ProductRepository;
-import com.example.webshop.repositories.UserRepository;
+import com.example.webshop.models.requests.*;
+import com.example.webshop.repositories.*;
 import com.example.webshop.services.ProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -29,6 +24,7 @@ import java.util.Date;
 public class ProductImplService implements ProductService {
 
     private final ModelMapper modelMapper;
+    private final CommentRepository commentRepository;
     private final ProductRepository productRepository;
     private final AtributeRepository atributeRepository;
     private final UserRepository userRepository;
@@ -37,9 +33,10 @@ public class ProductImplService implements ProductService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public ProductImplService(ModelMapper modelMapper, ProductRepository productRepository,
+    public ProductImplService(ModelMapper modelMapper, CommentRepository commentRepository, ProductRepository productRepository,
                               AtributeRepository atributeRepository, UserRepository userRepository, ImageRepository imageRepository, ProductAtributeRepository productAtributeRepository) {
         this.modelMapper = modelMapper;
+        this.commentRepository = commentRepository;
         this.productRepository = productRepository;
         this.atributeRepository = atributeRepository;
         this.userRepository = userRepository;
@@ -55,6 +52,42 @@ public class ProductImplService implements ProductService {
     @Override
     public Page<Product> getAllProducts(Pageable page, Integer zavrsenaPonuda) {
         return productRepository.findAllByZavrsenaPonuda(page, zavrsenaPonuda);
+    }
+
+    @Override
+    public Comment sendQuestion(Integer id, QuestionRequest questionRequest, Authentication authentication) {
+        JwtUser user = (JwtUser) authentication.getPrincipal();
+        KorisnikEntity korisnikEntity = userRepository.findById(user.getId()).orElseThrow(NotFoundException::new);
+        ProizvodEntity proizvodEntity = productRepository.findById(id).orElseThrow(NotFoundException::new);
+        KomentarEntity komentarEntity = modelMapper.map(questionRequest, KomentarEntity.class);
+        komentarEntity.setId(null);
+        komentarEntity.setKorisnik_komentar(korisnikEntity);
+        komentarEntity.setProizvod_komentar(proizvodEntity);
+        komentarEntity.setDatum(new Date());
+        commentRepository.saveAndFlush(komentarEntity);
+        entityManager.refresh(komentarEntity);
+        return modelMapper.map(komentarEntity, Comment.class);
+    }
+
+    @Override
+    public Comment sendAnswer(Integer id, AnswerRequest answerRequest) {
+        KomentarEntity komentarEntity = commentRepository.findById(id).orElseThrow(NotFoundException::new);
+        komentarEntity.setOdgovor(answerRequest.getOdgovor());
+        commentRepository.saveAndFlush(komentarEntity);
+        entityManager.refresh(komentarEntity);
+        return modelMapper.map(komentarEntity, Comment.class);
+    }
+
+    @Override
+    public Product purchaseProduct(Integer id, Authentication authentication) {
+        ProizvodEntity proizvodEntity = productRepository.findById(id).orElseThrow(NotFoundException::new);
+        JwtUser user = (JwtUser) authentication.getPrincipal();
+        KorisnikEntity korisnikEntity = userRepository.findById(user.getId()).orElseThrow(NotFoundException::new);
+        proizvodEntity.setZavrsenaPonuda(1);
+        proizvodEntity.setKupac(korisnikEntity);
+        productRepository.saveAndFlush(proizvodEntity);
+        entityManager.refresh(proizvodEntity);
+        return modelMapper.map(proizvodEntity, Product.class);
     }
 
     @Override
@@ -89,8 +122,15 @@ public class ProductImplService implements ProductService {
             System.out.println("ciao");
             productAtributeRepository.saveAndFlush(proizvodAtributEntity);
         }
-        Product p=modelMapper.map(proizvodEntity, Product.class);
-        return p;
+        // Product p = modelMapper.map(proizvodEntity, Product.class);
+        return modelMapper.map(proizvodEntity, Product.class);
+    }
+
+    @Override
+    public void delete(Integer id) {
+        ProizvodEntity proizvodEntity = productRepository.findById(id).orElseThrow(NotFoundException::new);
+        proizvodEntity.setZavrsenaPonuda(2);
+        productRepository.saveAndFlush(proizvodEntity);
     }
 
 

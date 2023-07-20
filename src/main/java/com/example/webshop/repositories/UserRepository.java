@@ -21,7 +21,7 @@ public interface UserRepository extends JpaRepository<KorisnikEntity,Integer> {
     Optional<KorisnikEntity> findByKorisnickoImeAndStatus(String username, UserStatus status);
 
     Optional<KorisnikEntity> findByKorisnickoIme(String username);
-    @Query("SELECT p FROM ProizvodEntity p WHERE p.kupac.id=:id")
+    @Query("SELECT p FROM ProizvodEntity p WHERE p.kupac.id=:id and p.zavrsenaPonuda=1")
     Page<ProizvodEntity> getAllProductsForBuyer(Pageable page, Integer id);
 
     @Query("SELECT p FROM ProizvodEntity p WHERE p.prodavac.id=:id and p.zavrsenaPonuda=:finished")

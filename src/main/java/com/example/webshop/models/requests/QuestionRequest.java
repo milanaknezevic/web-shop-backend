@@ -5,9 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 
 @Data
-public class ChangePasswordRequest {
+public class QuestionRequest {
     @NotBlank
-    private String lozinka;
-    @NotBlank
-    private String newPassword;
+    private String pitanje;
 }

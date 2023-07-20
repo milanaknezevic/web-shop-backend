@@ -58,20 +58,16 @@ public class AuthImplService implements AuthService {
             KorisnikEntity userEntity = userRepository.findByKorisnickoIme(request.getKorisnickoIme()).orElseThrow(NotFoundException::new);
             response = modelMapper.map(userEntity, LoginResponse.class);
             response.setToken(generateJwt(user));
-           // loggerService.saveLog("User " + user.getUsername() + " has logged in to the system", this.getClass().getName());
             return response;
-            /* if (userEntity.getStatus().equals(UserStatus.ACTIVE)) {
-                response = modelMapper.map(userEntity, LoginResponse.class);
-                response.setToken(generateJwt(user));
-                return response;
-            } else {
-                 sendActivationCode(userEntity.getKorisnickoIme(),userEntity.getEmail());
-            }*/
+
         }catch (Exception ex) {
            // LoggingUtil.logException(ex, getClass());
             KorisnikEntity korisnikEntity = userRepository.findByKorisnickoIme(request.getKorisnickoIme()).orElseThrow(NotFoundException::new);
-           // loggerService.saveLog("Activation code has sent", this.getClass().getName());
-            sendActivationCode(korisnikEntity.getKorisnickoIme(), korisnikEntity.getEmail());
+           if(korisnikEntity.getStatus().equals(UserStatus.REQUESTED))
+           {
+               // loggerService.saveLog("Activation code has sent", this.getClass().getName());
+               sendActivationCode(korisnikEntity.getKorisnickoIme(), korisnikEntity.getEmail());
+           }
             throw new UnauthorizedException();
         }
 

@@ -26,4 +26,6 @@ public interface UserService {
     User update(Integer id, UserUpdateRequest user) throws Exception;
 
     User updatePassword(Integer id, ChangePasswordRequest changePasswordRequest);
+
+
 }

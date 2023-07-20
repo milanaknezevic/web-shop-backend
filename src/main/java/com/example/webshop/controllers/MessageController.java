@@ -17,7 +17,7 @@ public class MessageController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Message insert(@RequestParam MessageRequest messageRequest, Authentication authentication) {
+    public Message insert(@RequestBody MessageRequest messageRequest, Authentication authentication) {
         return messageService.insert(messageRequest, authentication);
     }
 }
