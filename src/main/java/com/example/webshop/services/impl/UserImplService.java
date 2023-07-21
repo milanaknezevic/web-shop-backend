@@ -14,6 +14,7 @@ import com.example.webshop.models.requests.SignUpRequest;
 import com.example.webshop.models.requests.UserUpdateRequest;
 import com.example.webshop.repositories.UserRepository;
 import com.example.webshop.services.AuthService;
+import com.example.webshop.services.LogerService;
 import com.example.webshop.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +39,7 @@ public class UserImplService implements UserService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final AuthService authService;
-
+    private final LogerService logerService;
 
     @Value("${authorization.default.first-name:}")
     private String defaultFirstName;
@@ -57,12 +58,13 @@ public class UserImplService implements UserService {
     @PersistenceContext
     private EntityManager manager;
 
-    public UserImplService(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, AuthService authService) {
+    public UserImplService(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, AuthService authService, LogerService logerService) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
 
         this.authService = authService;
+        this.logerService = logerService;
     }
 
     @PostConstruct
@@ -103,6 +105,8 @@ public class UserImplService implements UserService {
         entity.setRola(Role.OBICNI_KORISNIK);
 
         entity = userRepository.saveAndFlush(entity);
+        logerService.insertLog("New user: " + entity.getKorisnickoIme() + " has registered.", this.getClass().getName());
+
         authService.sendActivationCode(entity.getKorisnickoIme(), entity.getEmail());
 
     }
@@ -111,19 +115,32 @@ public class UserImplService implements UserService {
     public User activateAccount(String username) {
         KorisnikEntity userEntity = userRepository.findByKorisnickoImeAndStatus(username, UserStatus.REQUESTED).orElseThrow(NotFoundException::new);
         userEntity.setStatus(UserStatus.ACTIVE);
-       // loggerService.saveLog("User: " + userEntity.getUsername() + " has activated profile.", this.getClass().getName());
+        logerService.insertLog("User: " + userEntity.getKorisnickoIme() + " has activated profile.", this.getClass().getName());
         return modelMapper.map(userRepository.saveAndFlush(userEntity), User.class);
     }
 
     @Override
     public Page<Product> getAllProductsForBuyer(Pageable page, Authentication authentication) {
         JwtUser user = (JwtUser) authentication.getPrincipal();
+        logerService.insertLog("User: " + user.getUsername() + " has searched his purchased products.", this.getClass().getName());
+/*  if (title == null || title.isEmpty()) {
+            return userRepository.getAllProductsForBuyer(page, user.getId()).map(p -> modelMapper.map(p, Product.class));
+        } else {
+            return userRepository.getAllProductsForBuyerAndSearch(page, user.getId(), title).map(p -> modelMapper.map(p, Product.class));
+        }*/
         return userRepository.getAllProductsForBuyer(page, user.getId()).map(p -> modelMapper.map(p, Product.class));
     }
 
     @Override
     public Page<Product> getAllProductsForSeller(Pageable page, Authentication authentication, Integer finished) {
         JwtUser user = (JwtUser) authentication.getPrincipal();
+        logerService.insertLog("User: " + user.getUsername() + " has searched his sold products.", this.getClass().getName());
+/* if (title == null || title.isEmpty()) {
+            return userRepository.getAllProductsForSeller(page, user.getId(), finished).map(p -> modelMapper.map(p, Product.class));
+        } else {
+            return userRepository.getAllProductsForSellerSearch(page, user.getId(),finished,title).map(p -> modelMapper.map(p, Product.class));
+
+        }*/
         return userRepository.getAllProductsForSeller(page, user.getId(), finished).map(p -> modelMapper.map(p, Product.class));
 
     }
@@ -137,6 +154,8 @@ public class UserImplService implements UserService {
         korisnikEntity.setGrad(userRequest.getGrad());
         korisnikEntity.setAvatar(userRequest.getAvatar());
         korisnikEntity.setEmail(userRequest.getEmail());
+        logerService.insertLog("User: " + korisnikEntity.getKorisnickoIme() + " has updated profile.", this.getClass().getName());
+
         return modelMapper.map(userRepository.saveAndFlush(korisnikEntity), User.class);
     }
 
@@ -145,7 +164,7 @@ public class UserImplService implements UserService {
         KorisnikEntity korisnikEntity = userRepository.findById(id).orElseThrow(NotFoundException::new);
         if (changePasswordRequest.getLozinka().equals(changePasswordRequest.getNewPassword())) {
             korisnikEntity.setLozinka(passwordEncoder.encode(changePasswordRequest.getLozinka()));
-           // loggerService.saveLog("User: " + userEntity.getUsername() + " has changed password.", this.getClass().getName());
+            logerService.insertLog("User: " + korisnikEntity.getKorisnickoIme() + " has changed password.", this.getClass().getName());
             return modelMapper.map(userRepository.saveAndFlush(korisnikEntity), User.class);
         } else {
             throw new BadRequestException();

@@ -7,6 +7,7 @@ import com.example.webshop.models.dto.Product;
 import com.example.webshop.models.entities.*;
 import com.example.webshop.models.requests.*;
 import com.example.webshop.repositories.*;
+import com.example.webshop.services.LogerService;
 import com.example.webshop.services.ProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -29,18 +30,20 @@ public class ProductImplService implements ProductService {
     private final AtributeRepository atributeRepository;
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
+    private final LogerService logerService;
     private final ProductAtributeRepository productAtributeRepository;
     @PersistenceContext
     private EntityManager entityManager;
 
     public ProductImplService(ModelMapper modelMapper, CommentRepository commentRepository, ProductRepository productRepository,
-                              AtributeRepository atributeRepository, UserRepository userRepository, ImageRepository imageRepository, ProductAtributeRepository productAtributeRepository) {
+                              AtributeRepository atributeRepository, UserRepository userRepository, ImageRepository imageRepository, LogerService logerService, ProductAtributeRepository productAtributeRepository) {
         this.modelMapper = modelMapper;
         this.commentRepository = commentRepository;
         this.productRepository = productRepository;
         this.atributeRepository = atributeRepository;
         this.userRepository = userRepository;
         this.imageRepository = imageRepository;
+        this.logerService = logerService;
         this.productAtributeRepository = productAtributeRepository;
     }
 
@@ -66,6 +69,8 @@ public class ProductImplService implements ProductService {
         komentarEntity.setDatum(new Date());
         commentRepository.saveAndFlush(komentarEntity);
         entityManager.refresh(komentarEntity);
+        logerService.insertLog("The user " + korisnikEntity.getKorisnickoIme() + " asked a question about the product " + komentarEntity.getProizvod_komentar().getNaslov(), this.getClass().getName());
+
         return modelMapper.map(komentarEntity, Comment.class);
     }
 
@@ -75,6 +80,8 @@ public class ProductImplService implements ProductService {
         komentarEntity.setOdgovor(answerRequest.getOdgovor());
         commentRepository.saveAndFlush(komentarEntity);
         entityManager.refresh(komentarEntity);
+        logerService.insertLog("Product owner answered on question for product  " + komentarEntity.getProizvod_komentar().getNaslov(), this.getClass().getName());
+
         return modelMapper.map(komentarEntity, Comment.class);
     }
 
@@ -87,6 +94,8 @@ public class ProductImplService implements ProductService {
         proizvodEntity.setKupac(korisnikEntity);
         productRepository.saveAndFlush(proizvodEntity);
         entityManager.refresh(proizvodEntity);
+        logerService.insertLog("The user " + korisnikEntity.getKorisnickoIme() + " has purchased prdouct " + proizvodEntity.getNaslov(), this.getClass().getName());
+
         return modelMapper.map(proizvodEntity, Product.class);
     }
 
@@ -123,6 +132,8 @@ public class ProductImplService implements ProductService {
             productAtributeRepository.saveAndFlush(proizvodAtributEntity);
         }
         // Product p = modelMapper.map(proizvodEntity, Product.class);
+        logerService.insertLog("The new product has been added by user " + korisnikEntity.getKorisnickoIme(), this.getClass().getName());
+
         return modelMapper.map(proizvodEntity, Product.class);
     }
 
@@ -130,6 +141,8 @@ public class ProductImplService implements ProductService {
     public void delete(Integer id) {
         ProizvodEntity proizvodEntity = productRepository.findById(id).orElseThrow(NotFoundException::new);
         proizvodEntity.setZavrsenaPonuda(2);
+        logerService.insertLog("The user has deleted product" + proizvodEntity.getNaslov(), this.getClass().getName());
+
         productRepository.saveAndFlush(proizvodEntity);
     }
 

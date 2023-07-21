@@ -11,6 +11,7 @@ import com.example.webshop.models.requests.LoginRequest;
 import com.example.webshop.repositories.UserRepository;
 import com.example.webshop.services.AuthService;
 import com.example.webshop.services.EmailService;
+import com.example.webshop.services.LogerService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class AuthImplService implements AuthService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final EmailService emailService;
+    private final LogerService logerService;
 
     private Map<String,String> codes=new HashMap<>();
 
@@ -58,6 +60,8 @@ public class AuthImplService implements AuthService {
             KorisnikEntity userEntity = userRepository.findByKorisnickoIme(request.getKorisnickoIme()).orElseThrow(NotFoundException::new);
             response = modelMapper.map(userEntity, LoginResponse.class);
             response.setToken(generateJwt(user));
+            logerService.insertLog("User " + user.getUsername() + " has logged in to the system", this.getClass().getName());
+
             return response;
 
         }catch (Exception ex) {
@@ -65,7 +69,7 @@ public class AuthImplService implements AuthService {
             KorisnikEntity korisnikEntity = userRepository.findByKorisnickoIme(request.getKorisnickoIme()).orElseThrow(NotFoundException::new);
            if(korisnikEntity.getStatus().equals(UserStatus.REQUESTED))
            {
-               // loggerService.saveLog("Activation code has sent", this.getClass().getName());
+               logerService.insertLog("Activation code has sent", this.getClass().getName());
                sendActivationCode(korisnikEntity.getKorisnickoIme(), korisnikEntity.getEmail());
            }
             throw new UnauthorizedException();
