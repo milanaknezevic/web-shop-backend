@@ -1,11 +1,9 @@
 package com.example.webshop.models.requests;
 
-import com.example.webshop.models.enums.Role;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Data
 public class UserUpdateRequest {

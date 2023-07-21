@@ -4,11 +4,13 @@ import com.example.webshop.exceptions.NotFoundException;
 import com.example.webshop.models.dto.Comment;
 import com.example.webshop.models.dto.JwtUser;
 import com.example.webshop.models.dto.Product;
+import com.example.webshop.models.dto.ProductAttribute;
 import com.example.webshop.models.entities.*;
 import com.example.webshop.models.requests.*;
 import com.example.webshop.repositories.*;
 import com.example.webshop.services.LogerService;
 import com.example.webshop.services.ProductService;
+import com.example.webshop.util.Util;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +19,15 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
@@ -97,6 +106,48 @@ public class ProductImplService implements ProductService {
         logerService.insertLog("The user " + korisnikEntity.getKorisnickoIme() + " has purchased prdouct " + proizvodEntity.getNaslov(), this.getClass().getName());
 
         return modelMapper.map(proizvodEntity, Product.class);
+    }
+
+    @Override
+    public Page<Product> searchProducts(Pageable page, SearchRequest searchRequest) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ProizvodEntity> query = cb.createQuery(ProizvodEntity.class);
+        Root<ProizvodEntity> root = query.from(ProizvodEntity.class);
+        List<Predicate> predicates = new ArrayList<>();
+
+        if (searchRequest.getProductStatus() != null) {
+            predicates.add(cb.equal(root.get("productStatus"), searchRequest.getProductStatus()));
+        }
+        if (searchRequest.getProductAttributes() != null && !searchRequest.getProductAttributes().isEmpty()) {
+            for (ProductAttribute productAttribute : searchRequest.getProductAttributes()) {
+                predicates.add(cb.equal(
+                        root.join("productAttribute").get("attribute").get("id"), productAttribute.getAtribut().getId()));
+                predicates.add(cb.equal(
+                        root.join("productAttribute").get("value"), productAttribute.getVrijednost()));
+            }
+        }
+        if (searchRequest.getLocation() != null) {
+            predicates.add(cb.equal(root.get("location"), searchRequest.getLocation()));
+
+        }
+        if (searchRequest.getCategoryName() != null) {
+            predicates.add(cb.equal(root.get("categoryName"), searchRequest.getCategoryName()));
+        }
+        if (searchRequest.getPriceFrom() != null) {
+            predicates.add(cb.equal(root.get("priceFrom"), searchRequest.getPriceFrom()));
+        }
+        if (searchRequest.getPriceTo() != null) {
+            predicates.add(cb.equal(root.get("priceTo"), searchRequest.getPriceTo()));
+        }
+
+        query.where(predicates.toArray(new Predicate[0]));
+
+        TypedQuery<ProizvodEntity> typedQuery = entityManager.createQuery(query);
+        List<ProizvodEntity> productEntities = typedQuery.getResultList();
+        List<Product> products = productEntities.stream().map(e -> modelMapper.map(e, Product.class)).toList();
+        // Kreira Page koristeći listu proizvoda i ukupan broj proizvoda
+        //return new PageImpl<>(products, page, products.size());
+        return Util.getPage(page, products);
     }
 
     @Override

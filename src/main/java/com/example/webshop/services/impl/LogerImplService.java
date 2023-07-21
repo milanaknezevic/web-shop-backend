@@ -4,10 +4,7 @@ import com.example.webshop.models.entities.LogerEntity;
 import com.example.webshop.repositories.LogerRepository;
 import com.example.webshop.services.LogerService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import org.slf4j.Logger;
 
 import java.util.Date;
 
