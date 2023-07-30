@@ -43,7 +43,7 @@ public class UserController {
         }
         return userService.update(id,request);
     }
-    @PostMapping("/{id}/change-password")
+    @PutMapping("/{id}/change-password")
     public void changePassword( @PathVariable Integer id, @Valid @RequestBody ChangePasswordRequest request) throws Exception {
         userService.updatePassword(id,request);
     }

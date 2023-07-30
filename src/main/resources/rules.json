@@ -1,60 +1,51 @@
 {
   "rules": [
     {
-      "methods": ["GET,PUT"],
-      "pattern": "/users/*",
-      "roles": ["ADMIN"]
-    },
-    {
-      "methods": ["POST"],
-      "pattern": "/users/*/change-password",
-      "roles": ["ADMIN"]
-    },
-    {
       "methods": ["POST"],
       "pattern": "/messages",
-      "roles": ["ADMIN"]
+      "roles": ["OBICNI_KORISNIK"]
     },
+    {
+      "methods": ["GET,PUT"],
+      "pattern": "/users/*",
+      "roles": ["OBICNI_KORISNIK"]
+    },
+    {
+      "methods": ["PUT"],
+      "pattern": "/users/*/change-password",
+      "roles": ["OBICNI_KORISNIK"]
+    },
+
     {
       "methods": ["POST"],
       "pattern": "/products",
-      "roles": ["ADMIN"]
+      "roles": ["OBICNI_KORISNIK"]
     },
     {
       "methods": ["POST"],
       "pattern": "/products/*/question",
-      "roles": ["ADMIN"]
+      "roles": ["OBICNI_KORISNIK"]
     },
     {
       "methods": ["PUT"],
       "pattern": "/products/*/answer",
-      "roles": ["ADMIN"]
+      "roles": ["OBICNI_KORISNIK"]
     },
     {
-      "methods": ["PUT"],
+      "methods": ["PUT","DELETE"],
       "pattern": "/products/*",
-      "roles": ["ADMIN"]
+      "roles": ["OBICNI_KORISNIK"]
     },
     {
-      "methods": ["GET"],
-      "pattern": "/categories/*/products",
-      "roles": ["ADMIN"]
+      "methods": ["PUT","DELETE"],
+      "pattern": "/products/*",
+      "roles": ["OBICNI_KORISNIK"]
     },
+
     {
       "methods": ["GET"],
       "pattern": "/categories/*",
-      "roles": ["ADMIN"]
-    },
-    {
-      "methods": ["GET"],
-      "pattern": "/categories",
-      "roles": ["ADMIN"]
-    },
-    {
-      "methods": ["GET"],
-      "pattern": "/products/*",
-      "roles": ["ADMIN"]
+      "roles": ["OBICNI_KORISNIK"]
     }
   ]
-
 }

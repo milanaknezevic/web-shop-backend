@@ -61,7 +61,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry interceptor = http.authorizeRequests();
         interceptor = interceptor.antMatchers(HttpMethod.POST, "/login").permitAll()
                 .antMatchers(HttpMethod.POST, "/sign-up").permitAll()
-                .antMatchers(HttpMethod.POST, "/activeAccount").permitAll();
+               .antMatchers(HttpMethod.GET, "/sign-up").permitAll()
+                .antMatchers(HttpMethod.POST, "/activeAccount").permitAll()
+                .antMatchers(HttpMethod.GET, "/products").permitAll()
+                .antMatchers(HttpMethod.GET, "/products/*").permitAll()
+                .antMatchers(HttpMethod.POST, "/products/searchProducts").permitAll()
+                .antMatchers(HttpMethod.GET, "/categories/*/products").permitAll()
+                .antMatchers(HttpMethod.GET, "/categories").permitAll();
+
         for (Rule rule : authorizationRules.getRules()) {
             if (rule.getMethods().isEmpty())
                 interceptor = interceptor.antMatchers(rule.getPattern()).hasAnyAuthority(rule.getRoles().toArray(String[]::new));
