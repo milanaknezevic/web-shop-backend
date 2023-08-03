@@ -6,6 +6,13 @@
       "roles": ["OBICNI_KORISNIK"]
     },
     {
+      "methods": ["GET"],
+      "pattern": "/users/products/*",
+      "roles": [
+        "CUSTOM_USER"
+      ]
+    },
+    {
       "methods": ["GET,PUT"],
       "pattern": "/users/*",
       "roles": ["OBICNI_KORISNIK"]
@@ -29,11 +36,6 @@
     {
       "methods": ["PUT"],
       "pattern": "/products/*/answer",
-      "roles": ["OBICNI_KORISNIK"]
-    },
-    {
-      "methods": ["PUT","DELETE"],
-      "pattern": "/products/*",
       "roles": ["OBICNI_KORISNIK"]
     },
     {

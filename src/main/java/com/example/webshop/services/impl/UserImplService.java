@@ -54,6 +54,18 @@ public class UserImplService implements UserService {
     @Value("${authorization.default.email:}")
     private String defaultEmail;
 
+    @Value("${authorization.default.support-username}")
+    private String defaultSupportUsername;
+    @Value("${authorization.default.support-password:}")
+    private String defaultSupportPassword;
+    @Value("${authorization.default.support-first-name:}")
+    private String defaultSupportFirstName;
+    @Value("${authorization.default.support-last-name:}")
+    private String defaultSupportLastName;
+    @Value("${authorization.default.support-city:}")
+    private String defaultSupportCity;
+    @Value("${authorization.default.support-email:}")
+    private String defaultSupportEmail;
 
     @PersistenceContext
     private EntityManager manager;
@@ -71,16 +83,29 @@ public class UserImplService implements UserService {
     public void postConstruct() {
 
         if (userRepository.count() == 0) {
-            KorisnikEntity userEntity = new KorisnikEntity();
-            userEntity.setIme(defaultFirstName);
-            userEntity.setPrezime(defaultLastName);
-            userEntity.setKorisnickoIme(defaultUsername);
-            userEntity.setLozinka(passwordEncoder.encode(defaultPassword));
-            userEntity.setEmail(defaultEmail);
-            userEntity.setGrad(defaultCity);
-            userEntity.setStatus(UserStatus.ACTIVE);
-            userEntity.setRola(Role.ADMIN);
-            userRepository.saveAndFlush(userEntity);
+            KorisnikEntity admin = new KorisnikEntity();
+            //admin
+            admin.setIme(defaultFirstName);
+            admin.setPrezime(defaultLastName);
+            admin.setKorisnickoIme(defaultUsername);
+            admin.setLozinka(passwordEncoder.encode(defaultPassword));
+            admin.setEmail(defaultEmail);
+            admin.setGrad(defaultCity);
+            admin.setStatus(UserStatus.ACTIVE);
+            admin.setRola(Role.ADMIN);
+            //customer_support
+            KorisnikEntity customer_support=new KorisnikEntity();
+            customer_support.setIme(defaultSupportFirstName);
+            customer_support.setPrezime(defaultSupportLastName);
+            customer_support.setKorisnickoIme(defaultSupportUsername);
+            customer_support.setLozinka(passwordEncoder.encode(defaultSupportPassword));
+            customer_support.setEmail(defaultSupportEmail);
+            customer_support.setGrad(defaultSupportCity);
+            customer_support.setStatus(UserStatus.ACTIVE);
+            customer_support.setRola(Role.KORISNICKA_PODRSKA);
+
+            userRepository.saveAndFlush(admin);
+            userRepository.saveAndFlush(customer_support);
         }
     }
 
