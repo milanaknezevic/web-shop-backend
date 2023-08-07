@@ -28,8 +28,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public Page<Product> getAllProducts(Pageable page, Integer zavrsenaPonuda) {
-        return productService.getAllProducts(page, zavrsenaPonuda);
+    public Page<Product> getAllProducts(Pageable page) {
+        return productService.getAllProducts(page);
     }
 
     @PostMapping

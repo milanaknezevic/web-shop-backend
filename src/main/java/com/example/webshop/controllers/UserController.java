@@ -31,7 +31,7 @@ public class UserController {
         return userService.getAllProductsForBuyer(page, authentication);
     }
     @GetMapping("/products") //prodaje jednog prodavca/proizvodi koji su prodani ili koje on treba da proda
-    public Page<Product> getAllProductsForSeller(Pageable page, Authentication authentication,Integer finished) {
+    public Page<Product> getAllProductsForSeller(Pageable page, Authentication authentication,@RequestParam(required = false) Integer finished) {
         return userService.getAllProductsForSeller(page,authentication,finished);
     }
     @PutMapping("/{id}")
@@ -44,8 +44,13 @@ public class UserController {
         return userService.update(id,request);
     }
     @PutMapping("/{id}/change-password")
-    public void changePassword( @PathVariable Integer id, @Valid @RequestBody ChangePasswordRequest request) throws Exception {
-        userService.updatePassword(id,request);
+    public User changePassword( @PathVariable Integer id, @Valid @RequestBody ChangePasswordRequest request,Authentication authentication) throws Exception {
+        JwtUser user=(JwtUser)authentication.getPrincipal();
+        if(!user.getId().equals(id))
+        {
+            throw new ForbiddenException();
+        }
+        return userService.updatePassword(id,request);
     }
 
 }

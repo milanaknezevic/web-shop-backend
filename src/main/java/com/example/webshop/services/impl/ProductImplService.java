@@ -62,8 +62,9 @@ public class ProductImplService implements ProductService {
     }
 
     @Override
-    public Page<Product> getAllProducts(Pageable page, Integer zavrsenaPonuda) {
-        return productRepository.findAllByZavrsenaPonuda(page, zavrsenaPonuda);
+    public Page<Product> getAllProducts(Pageable page) {
+        return productRepository.findAllByZavrsenaPonuda(page).map(p -> modelMapper.map(p, Product.class));
+
     }
 
     @Override
