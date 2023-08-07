@@ -60,7 +60,7 @@ public class ProductController {
         return productService.purchaseProduct(id, authentication);
     }
     @PostMapping("/searchProducts")
-    public Page<Product>  findById(Pageable page,@RequestBody SearchRequest searchRequest)
+    public Page<Product>  searchProducts(Pageable page,@RequestBody SearchRequest searchRequest)
     {
         return productService.searchProducts(page,searchRequest);
     }
