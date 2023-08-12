@@ -55,10 +55,7 @@ public class UserImplService implements UserService {
     private String defaultUsername;
     @Value("${authorization.default.password:}")
     private String defaultPassword;
-    @Value("${authorization.default.city:}")
-    private String defaultCity;
-    @Value("${authorization.default.email:}")
-    private String defaultEmail;
+
 
     @Value("${authorization.default.support-username}")
     private String defaultSupportUsername;
@@ -68,10 +65,7 @@ public class UserImplService implements UserService {
     private String defaultSupportFirstName;
     @Value("${authorization.default.support-last-name:}")
     private String defaultSupportLastName;
-    @Value("${authorization.default.support-city:}")
-    private String defaultSupportCity;
-    @Value("${authorization.default.support-email:}")
-    private String defaultSupportEmail;
+
 
     @PersistenceContext
     private EntityManager manager;
@@ -90,14 +84,16 @@ public class UserImplService implements UserService {
     @PostConstruct
     public void postConstruct() {
 
-        if (userRepository.count() == 0) {
+        if (adminRepository.count() == 0) {
             AdminEntity admin = new AdminEntity();
             //admin
             admin.setIme(defaultFirstName);
             admin.setPrezime(defaultLastName);
             admin.setKorisnickoIme(defaultUsername);
             admin.setLozinka(passwordEncoder.encode(defaultPassword));
-
+            adminRepository.saveAndFlush(admin);
+        }
+        if (customerSupportRepositoy.count() == 0) {
 
             CustomerSupportEntity customer_support = new CustomerSupportEntity();
             customer_support.setIme(defaultSupportFirstName);
@@ -106,7 +102,6 @@ public class UserImplService implements UserService {
             customer_support.setLozinka(passwordEncoder.encode(defaultSupportPassword));
 
 
-            adminRepository.saveAndFlush(admin);
             customerSupportRepositoy.saveAndFlush(customer_support);
         }
     }
