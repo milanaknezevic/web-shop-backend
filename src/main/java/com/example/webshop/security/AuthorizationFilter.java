@@ -1,7 +1,7 @@
 package com.example.webshop.security;
 
 import com.example.webshop.models.dto.JwtUser;
-import com.example.webshop.models.enums.Role;
+import com.example.webshop.models.enums.UserStatus;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +40,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                     .setSigningKey(authorizationSecret)
                     .parseClaimsJws(token)
                     .getBody();
-            JwtUser jwtUser = new JwtUser(Integer.valueOf(claims.getId()), claims.getSubject(), null, Role.valueOf(claims.get("role", String.class)));
+            System.out.println("claims " + claims);
+            JwtUser jwtUser = new JwtUser(Integer.valueOf(claims.getId()), claims.getSubject(), null, UserStatus.valueOf(claims.get("userStatus", String.class)));
             Authentication authentication = new UsernamePasswordAuthenticationToken(jwtUser, null, jwtUser.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {

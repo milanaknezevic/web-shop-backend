@@ -1,53 +1,5 @@
 {
   "rules": [
-    {
-      "methods": ["POST"],
-      "pattern": "/messages",
-      "roles": ["OBICNI_KORISNIK"]
-    },
-    {
-      "methods": ["GET"],
-      "pattern": "/users/products/*",
-      "roles": [
-        "CUSTOM_USER"
-      ]
-    },
-    {
-      "methods": ["GET,PUT"],
-      "pattern": "/users/*",
-      "roles": ["OBICNI_KORISNIK"]
-    },
-    {
-      "methods": ["PUT"],
-      "pattern": "/users/*/change-password",
-      "roles": ["OBICNI_KORISNIK"]
-    },
 
-    {
-      "methods": ["POST"],
-      "pattern": "/products",
-      "roles": ["OBICNI_KORISNIK"]
-    },
-    {
-      "methods": ["POST"],
-      "pattern": "/products/*/question",
-      "roles": ["OBICNI_KORISNIK"]
-    },
-    {
-      "methods": ["PUT"],
-      "pattern": "/products/*/answer",
-      "roles": ["OBICNI_KORISNIK"]
-    },
-    {
-      "methods": ["PUT","DELETE"],
-      "pattern": "/products/*",
-      "roles": ["OBICNI_KORISNIK"]
-    },
-
-    {
-      "methods": ["GET"],
-      "pattern": "/categories/*",
-      "roles": ["OBICNI_KORISNIK"]
-    }
   ]
 }

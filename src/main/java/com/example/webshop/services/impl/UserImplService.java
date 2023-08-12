@@ -6,12 +6,15 @@ import com.example.webshop.exceptions.NotFoundException;
 import com.example.webshop.models.dto.JwtUser;
 import com.example.webshop.models.dto.Product;
 import com.example.webshop.models.dto.User;
+import com.example.webshop.models.entities.AdminEntity;
+import com.example.webshop.models.entities.CustomerSupportEntity;
 import com.example.webshop.models.entities.KorisnikEntity;
-import com.example.webshop.models.enums.Role;
 import com.example.webshop.models.enums.UserStatus;
 import com.example.webshop.models.requests.ChangePasswordRequest;
 import com.example.webshop.models.requests.SignUpRequest;
 import com.example.webshop.models.requests.UserUpdateRequest;
+import com.example.webshop.repositories.AdminRepository;
+import com.example.webshop.repositories.CustomerSupportRepositoy;
 import com.example.webshop.repositories.UserRepository;
 import com.example.webshop.services.AuthService;
 import com.example.webshop.services.LogerService;
@@ -36,6 +39,9 @@ import java.util.stream.Collectors;
 public class UserImplService implements UserService {
 
     public final UserRepository userRepository;
+    public final AdminRepository adminRepository;
+    public final CustomerSupportRepositoy customerSupportRepositoy;
+
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final AuthService authService;
@@ -70,8 +76,10 @@ public class UserImplService implements UserService {
     @PersistenceContext
     private EntityManager manager;
 
-    public UserImplService(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, AuthService authService, LogerService logerService) {
+    public UserImplService(UserRepository userRepository, AdminRepository adminRepository, CustomerSupportRepositoy customerSupportRepositoy, ModelMapper modelMapper, PasswordEncoder passwordEncoder, AuthService authService, LogerService logerService) {
         this.userRepository = userRepository;
+        this.adminRepository = adminRepository;
+        this.customerSupportRepositoy = customerSupportRepositoy;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
 
@@ -83,29 +91,23 @@ public class UserImplService implements UserService {
     public void postConstruct() {
 
         if (userRepository.count() == 0) {
-            KorisnikEntity admin = new KorisnikEntity();
+            AdminEntity admin = new AdminEntity();
             //admin
             admin.setIme(defaultFirstName);
             admin.setPrezime(defaultLastName);
             admin.setKorisnickoIme(defaultUsername);
             admin.setLozinka(passwordEncoder.encode(defaultPassword));
-            admin.setEmail(defaultEmail);
-            admin.setGrad(defaultCity);
-            admin.setStatus(UserStatus.ACTIVE);
-            admin.setRola(Role.ADMIN);
-            //customer_support
-            KorisnikEntity customer_support=new KorisnikEntity();
+
+
+            CustomerSupportEntity customer_support = new CustomerSupportEntity();
             customer_support.setIme(defaultSupportFirstName);
             customer_support.setPrezime(defaultSupportLastName);
             customer_support.setKorisnickoIme(defaultSupportUsername);
             customer_support.setLozinka(passwordEncoder.encode(defaultSupportPassword));
-            customer_support.setEmail(defaultSupportEmail);
-            customer_support.setGrad(defaultSupportCity);
-            customer_support.setStatus(UserStatus.ACTIVE);
-            customer_support.setRola(Role.KORISNICKA_PODRSKA);
 
-            userRepository.saveAndFlush(admin);
-            userRepository.saveAndFlush(customer_support);
+
+            adminRepository.saveAndFlush(admin);
+            customerSupportRepositoy.saveAndFlush(customer_support);
         }
     }
 
@@ -127,7 +129,7 @@ public class UserImplService implements UserService {
         KorisnikEntity entity = modelMapper.map(request, KorisnikEntity.class);
         entity.setLozinka(passwordEncoder.encode(entity.getLozinka()));
         entity.setStatus(UserStatus.REQUESTED);
-        entity.setRola(Role.OBICNI_KORISNIK);
+        // entity.setRola(Role.OBICNI_KORISNIK);
 
         entity = userRepository.saveAndFlush(entity);
         logerService.insertLog("New user: " + entity.getKorisnickoIme() + " has registered.", this.getClass().getName());

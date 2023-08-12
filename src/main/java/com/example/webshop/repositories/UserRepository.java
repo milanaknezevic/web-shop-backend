@@ -2,7 +2,6 @@ package com.example.webshop.repositories;
 
 import com.example.webshop.models.entities.KorisnikEntity;
 import com.example.webshop.models.entities.ProizvodEntity;
-import com.example.webshop.models.enums.Role;
 import com.example.webshop.models.enums.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +16,7 @@ public interface UserRepository extends JpaRepository<KorisnikEntity,Integer> {
     Boolean existsByKorisnickoIme(String korisnickoIme);
     Boolean existsByEmail(String email);
     List<KorisnikEntity> findAll();
-    List<KorisnikEntity> findAllByRolaAndStatus(Role role, UserStatus status);
+   // List<KorisnikEntity> findAllByRolaAndStatus(Role role, UserStatus status);
     Optional<KorisnikEntity> findByKorisnickoImeAndStatus(String username, UserStatus status);
 
     Optional<KorisnikEntity> findByKorisnickoIme(String username);

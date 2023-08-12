@@ -5,6 +5,7 @@ import com.example.webshop.security.models.AuthorizationRules;
 import com.example.webshop.security.models.Rule;
 import com.example.webshop.services.JwtUserDetailsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -61,13 +62,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry interceptor = http.authorizeRequests();
         interceptor = interceptor.antMatchers(HttpMethod.POST, "/login").permitAll()
                 .antMatchers(HttpMethod.POST, "/sign-up").permitAll()
-               .antMatchers(HttpMethod.GET, "/sign-up").permitAll()
+                .antMatchers(HttpMethod.GET, "/sign-up").permitAll()
                 .antMatchers(HttpMethod.POST, "/activeAccount").permitAll()
                 .antMatchers(HttpMethod.GET, "/products").permitAll()
                 .antMatchers(HttpMethod.GET, "/products/*").permitAll()
                 .antMatchers(HttpMethod.POST, "/products/searchProducts").permitAll()
                 .antMatchers(HttpMethod.GET, "/categories/*/products").permitAll()
-                .antMatchers(HttpMethod.GET, "/categories").permitAll();
+                .antMatchers(HttpMethod.GET, "/categories").permitAll()
+                .antMatchers(HttpMethod.GET, "/categories/*").permitAll();
 
         for (Rule rule : authorizationRules.getRules()) {
             if (rule.getMethods().isEmpty())
@@ -77,6 +79,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             }
         }
         return interceptor.anyRequest().denyAll().and();
+
     }
 
     @Bean
@@ -90,6 +93,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/v2/api-docs",

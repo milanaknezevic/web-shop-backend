@@ -1,6 +1,5 @@
 package com.example.webshop.models.entities;
 
-import com.example.webshop.models.enums.Role;
 import com.example.webshop.models.enums.UserStatus;
 import lombok.*;
 
@@ -36,10 +35,6 @@ public class KorisnikEntity {
     @Basic
     @Column(name = "email")
     private String email;
-    @Basic
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "rola", nullable = false)
-    private Role rola;
     @Basic
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "status")
