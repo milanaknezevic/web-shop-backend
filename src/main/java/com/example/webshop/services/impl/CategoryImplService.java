@@ -2,6 +2,7 @@ package com.example.webshop.services.impl;
 
 import com.example.webshop.exceptions.NotFoundException;
 import com.example.webshop.models.dto.Category;
+import com.example.webshop.models.dto.CategoryWithAttributes;
 import com.example.webshop.models.dto.Product;
 import com.example.webshop.models.entities.KategorijaEntity;
 import com.example.webshop.repositories.CategoryRepository;
@@ -25,16 +26,16 @@ public class CategoryImplService implements CategoryService {
     private final ModelMapper modelMapper;
 
     @Override
-    public List<Category> findAll() {
+    public List<CategoryWithAttributes> findAll() {
         logerService.insertLog("Get all categories ", this.getClass().getName());
-        return categoryRepository.findAll().stream().map(c -> modelMapper.map(c, Category.class)).collect(Collectors.toList());
+        return categoryRepository.findAll().stream().map(c -> modelMapper.map(c, CategoryWithAttributes.class)).collect(Collectors.toList());
     }
 
     @Override
-    public Category findById(Integer id) throws NotFoundException {
+    public CategoryWithAttributes findById(Integer id) throws NotFoundException {
         logerService.insertLog("Get category by id ", this.getClass().getName());
 
-        return modelMapper.map(categoryRepository.findById(id).orElseThrow(NotFoundException::new), Category.class);
+        return modelMapper.map(categoryRepository.findById(id).orElseThrow(NotFoundException::new), CategoryWithAttributes.class);
     }
 
     @Override

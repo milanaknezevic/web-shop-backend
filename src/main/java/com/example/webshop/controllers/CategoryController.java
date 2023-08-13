@@ -1,6 +1,7 @@
 package com.example.webshop.controllers;
 
 import com.example.webshop.models.dto.Category;
+import com.example.webshop.models.dto.CategoryWithAttributes;
 import com.example.webshop.models.dto.Product;
 import com.example.webshop.services.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +21,12 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public List<Category> findAll() {
+    public List<CategoryWithAttributes> findAll() {
         return categoryService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Category findById(@PathVariable Integer id) {
+    public CategoryWithAttributes findById(@PathVariable Integer id) {
         return categoryService.findById(id);
     }
 
