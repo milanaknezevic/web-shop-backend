@@ -62,9 +62,13 @@ public class ProductImplService implements ProductService {
     }
 
     @Override
-    public Page<Product> getAllProducts(Pageable page) {
-        return productRepository.findAllByZavrsenaPonuda(page).map(p -> modelMapper.map(p, Product.class));
+    public Page<Product> getAllProducts(Pageable page, String naslov) {
+        if (naslov == null || naslov.isEmpty()) {
+            return productRepository.findAllByZavrsenaPonuda(page).map(p -> modelMapper.map(p, Product.class));
+        } else {
 
+            return productRepository.findALlByTitleAndZavrsenaPonuda(page, naslov).map(p -> modelMapper.map(p, Product.class));
+        }
     }
 
     @Override

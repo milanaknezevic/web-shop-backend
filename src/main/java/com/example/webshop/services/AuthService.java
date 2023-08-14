@@ -11,4 +11,5 @@ public interface AuthService {
     void sendActivationCode(String username,String mail);
 
     boolean activateAccount(AccountActivationRequest request);
+    public String sendActivationCode2(String username, String mail);
 }

@@ -8,6 +8,7 @@ import com.example.webshop.models.requests.UserUpdateRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ public interface UserService {
     Page<Product> getAllProductsForSeller(Pageable page, Authentication authentication, Integer finished);
 
     User update(Integer id, UserUpdateRequest user) throws Exception;
+    String insertImage(MultipartFile multipartFile);
 
     User updatePassword(Integer id, ChangePasswordRequest changePasswordRequest);
 

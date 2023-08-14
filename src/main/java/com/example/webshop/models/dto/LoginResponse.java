@@ -7,4 +7,5 @@ import lombok.EqualsAndHashCode;
 @Data
 public class LoginResponse extends User {
     private String token;
+    private String code;
 }

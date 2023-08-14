@@ -67,6 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/products").permitAll()
                 .antMatchers(HttpMethod.GET, "/products/*").permitAll()
                 .antMatchers(HttpMethod.POST, "/products/searchProducts").permitAll()
+                .antMatchers(HttpMethod.POST, "/uploadImage").permitAll()
                 .antMatchers(HttpMethod.GET, "/categories/*/products").permitAll()
                 .antMatchers(HttpMethod.GET, "/categories").permitAll()
                 .antMatchers(HttpMethod.GET, "/categories/*").permitAll();
@@ -78,7 +79,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 interceptor = interceptor.antMatchers(HttpMethod.resolve(method), rule.getPattern()).hasAnyAuthority(rule.getRoles().toArray(String[]::new));
             }
         }
-        return interceptor.anyRequest().denyAll().and();
+        return interceptor.anyRequest().authenticated().and();
 
     }
 

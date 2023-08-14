@@ -15,7 +15,7 @@ public interface ProductService {
 
     Product findById(Integer id) throws NotFoundException;
 
-    Page<Product> getAllProducts(Pageable page);
+    Page<Product> getAllProducts(Pageable page,String naslov);
 
     Product insert(ProductRequest productRequest, Authentication authentication);
     public void delete(Integer id);

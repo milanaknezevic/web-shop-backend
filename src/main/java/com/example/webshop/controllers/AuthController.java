@@ -9,7 +9,9 @@ import com.example.webshop.services.AuthService;
 import com.example.webshop.services.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -22,21 +24,23 @@ public class AuthController {
         this.userService = userService;
         this.authService = authService;
     }
+    @PostMapping("insertImage")
+    public String insertImage(@RequestParam(value = "file", required = false) MultipartFile file) {
+        return userService.insertImage(file);
+    }
     @PostMapping("login")
-    public LoginResponse login(@RequestBody @Valid LoginRequest request)
-    {
+    public LoginResponse login(@RequestBody @Valid LoginRequest request) {
         return authService.login(request);
     }
+
     @PostMapping("sign-up")
-    public void signUp(@RequestBody @Valid SignUpRequest request)
-    {
+    public void signUp(@RequestBody @Valid SignUpRequest request) {
         userService.signUp(request);
     }
+
     @PostMapping("activeAccount")
-    public User activeAccount(@RequestBody @Valid AccountActivationRequest accountActivationRequest)
-    {
-        if(authService.activateAccount(accountActivationRequest))
-        {
+    public User activeAccount(@RequestBody @Valid AccountActivationRequest accountActivationRequest) {
+        if (authService.activateAccount(accountActivationRequest)) {
             return userService.activateAccount(accountActivationRequest.getKorisnickoIme());
         }
         return null;

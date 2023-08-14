@@ -28,8 +28,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public Page<Product> getAllProducts(Pageable page) {
-        return productService.getAllProducts(page);
+    public Page<Product> getAllProducts(Pageable page,@RequestParam(required = false) String naslov) {
+        return productService.getAllProducts(page,naslov);
     }
 
     @PostMapping
@@ -59,9 +59,9 @@ public class ProductController {
     public Product purchaseProduct(@PathVariable Integer id, Authentication authentication) {
         return productService.purchaseProduct(id, authentication);
     }
+
     @PostMapping("/searchProducts")
-    public Page<Product>  searchProducts(Pageable page,@RequestBody SearchRequest searchRequest)
-    {
-        return productService.searchProducts(page,searchRequest);
+    public Page<Product> searchProducts(Pageable page, @RequestBody SearchRequest searchRequest) {
+        return productService.searchProducts(page, searchRequest);
     }
 }

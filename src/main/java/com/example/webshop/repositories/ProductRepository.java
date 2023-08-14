@@ -8,7 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface ProductRepository extends JpaRepository<ProizvodEntity, Integer> {
-    //Page<Product> findAllByZavrsenaPonuda(Pageable page);
+
     @Query("SELECT p from ProizvodEntity p where p.zavrsenaPonuda=0")
     Page<ProizvodEntity> findAllByZavrsenaPonuda(Pageable page);
+    @Query("SELECT p FROM ProizvodEntity p WHERE LOWER(p.naslov) LIKE LOWER(CONCAT('%', :naslov, '%')) and p.zavrsenaPonuda=0")
+    Page<ProizvodEntity> findALlByTitleAndZavrsenaPonuda(Pageable page, String naslov);
+
+
 }

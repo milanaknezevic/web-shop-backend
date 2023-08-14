@@ -26,12 +26,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -66,7 +71,8 @@ public class UserImplService implements UserService {
     @Value("${authorization.default.support-last-name:}")
     private String defaultSupportLastName;
 
-
+    @Value("${avatarDir:}")
+    private String dir;
     @PersistenceContext
     private EntityManager manager;
 
@@ -119,7 +125,7 @@ public class UserImplService implements UserService {
 
     @Override
     public void signUp(SignUpRequest request) {
-        if (userRepository.existsByKorisnickoIme(request.getKorisnickoIme()) && userRepository.existsByEmail(request.getEmail()))
+        if (userRepository.existsByKorisnickoIme(request.getKorisnickoIme()) || userRepository.existsByEmail(request.getEmail()))
             throw new ConflictException();
         KorisnikEntity entity = modelMapper.map(request, KorisnikEntity.class);
         entity.setLozinka(passwordEncoder.encode(entity.getLozinka()));
@@ -140,7 +146,18 @@ public class UserImplService implements UserService {
         logerService.insertLog("User: " + userEntity.getKorisnickoIme() + " has activated profile.", this.getClass().getName());
         return modelMapper.map(userRepository.saveAndFlush(userEntity), User.class);
     }
-
+    @Override
+    public String insertImage(MultipartFile multipartFile) {
+        try {
+            String name = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
+            Path path = Paths.get(dir + name);
+            Files.copy(multipartFile.getInputStream(), path);
+            return name;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return null;
+        }
+    }
     @Override
     public Page<Product> getAllProductsForBuyer(Pageable page, Authentication authentication) {
         JwtUser user = (JwtUser) authentication.getPrincipal();

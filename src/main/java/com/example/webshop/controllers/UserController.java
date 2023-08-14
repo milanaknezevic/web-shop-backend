@@ -30,27 +30,28 @@ public class UserController {
     public Page<Product> getAllProductsForBuyer(Pageable page, Authentication authentication) {
         return userService.getAllProductsForBuyer(page, authentication);
     }
+
     @GetMapping("/products") //prodaje jednog prodavca/proizvodi koji su prodani ili koje on treba da proda
-    public Page<Product> getAllProductsForSeller(Pageable page, Authentication authentication,@RequestParam(required = false) Integer finished) {
-        return userService.getAllProductsForSeller(page,authentication,finished);
+    public Page<Product> getAllProductsForSeller(Pageable page, Authentication authentication, @RequestParam(required = false) Integer finished) {
+        return userService.getAllProductsForSeller(page, authentication, finished);
     }
+
     @PutMapping("/{id}")
     public User update(@PathVariable Integer id, @Valid @RequestBody UserUpdateRequest request, Authentication auth) throws Exception {
-        JwtUser user=(JwtUser)auth.getPrincipal();
-        if(!user.getId().equals(id))
-        {
+        JwtUser user = (JwtUser) auth.getPrincipal();
+        if (!user.getId().equals(id)) {
             throw new ForbiddenException();
         }
-        return userService.update(id,request);
+        return userService.update(id, request);
     }
+
     @PutMapping("/{id}/change-password")
-    public User changePassword( @PathVariable Integer id, @Valid @RequestBody ChangePasswordRequest request,Authentication authentication) throws Exception {
-        JwtUser user=(JwtUser)authentication.getPrincipal();
-        if(!user.getId().equals(id))
-        {
+    public User changePassword(@PathVariable Integer id, @Valid @RequestBody ChangePasswordRequest request, Authentication authentication) throws Exception {
+        JwtUser user = (JwtUser) authentication.getPrincipal();
+        if (!user.getId().equals(id)) {
             throw new ForbiddenException();
         }
-        return userService.updatePassword(id,request);
+        return userService.updatePassword(id, request);
     }
 
 }
