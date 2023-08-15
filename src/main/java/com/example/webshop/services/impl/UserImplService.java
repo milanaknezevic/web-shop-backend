@@ -146,6 +146,7 @@ public class UserImplService implements UserService {
         logerService.insertLog("User: " + userEntity.getKorisnickoIme() + " has activated profile.", this.getClass().getName());
         return modelMapper.map(userRepository.saveAndFlush(userEntity), User.class);
     }
+
     @Override
     public String insertImage(MultipartFile multipartFile) {
         try {
@@ -158,15 +159,11 @@ public class UserImplService implements UserService {
             return null;
         }
     }
+
     @Override
     public Page<Product> getAllProductsForBuyer(Pageable page, Authentication authentication) {
         JwtUser user = (JwtUser) authentication.getPrincipal();
         logerService.insertLog("User: " + user.getUsername() + " has searched his purchased products.", this.getClass().getName());
-/*  if (title == null || title.isEmpty()) {
-            return userRepository.getAllProductsForBuyer(page, user.getId()).map(p -> modelMapper.map(p, Product.class));
-        } else {
-            return userRepository.getAllProductsForBuyerAndSearch(page, user.getId(), title).map(p -> modelMapper.map(p, Product.class));
-        }*/
         return userRepository.getAllProductsForBuyer(page, user.getId()).map(p -> modelMapper.map(p, Product.class));
     }
 
@@ -174,13 +171,15 @@ public class UserImplService implements UserService {
     public Page<Product> getAllProductsForSeller(Pageable page, Authentication authentication, Integer finished) {
         JwtUser user = (JwtUser) authentication.getPrincipal();
         logerService.insertLog("User: " + user.getUsername() + " has searched his sold products.", this.getClass().getName());
-/* if (title == null || title.isEmpty()) {
+
+        System.out.println("finished" + finished);
+        if (finished ==0 || finished ==1) {
             return userRepository.getAllProductsForSeller(page, user.getId(), finished).map(p -> modelMapper.map(p, Product.class));
         } else {
-            return userRepository.getAllProductsForSellerSearch(page, user.getId(),finished,title).map(p -> modelMapper.map(p, Product.class));
+            return userRepository.getAllProductsForSellerWithoutFinished(page, user.getId()).map(p -> modelMapper.map(p, Product.class));
 
-        }*/
-        return userRepository.getAllProductsForSeller(page, user.getId(), finished).map(p -> modelMapper.map(p, Product.class));
+        }
+
 
     }
 

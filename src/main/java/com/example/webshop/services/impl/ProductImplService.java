@@ -13,6 +13,7 @@ import com.example.webshop.services.ProductService;
 import com.example.webshop.util.Util;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -121,29 +123,31 @@ public class ProductImplService implements ProductService {
         List<Predicate> predicates = new ArrayList<>();
 
         if (searchRequest.getProductStatus() != null) {
-            predicates.add(cb.equal(root.get("productStatus"), searchRequest.getProductStatus()));
+            predicates.add(cb.equal(root.get("stanje"), searchRequest.getProductStatus()));
         }
         if (searchRequest.getProductAttributes() != null && !searchRequest.getProductAttributes().isEmpty()) {
             for (ProductAttribute productAttribute : searchRequest.getProductAttributes()) {
                 predicates.add(cb.equal(
-                        root.join("productAttribute").get("attribute").get("id"), productAttribute.getAtribut().getId()));
+                        root.join("proizvodAtributs").get("atribut").get("id"), productAttribute.getAtribut().getId()));
                 predicates.add(cb.equal(
-                        root.join("productAttribute").get("value"), productAttribute.getVrijednost()));
+                        root.join("proizvodAtributs").get("vrijednost"), productAttribute.getVrijednost()));
             }
         }
         if (searchRequest.getLocation() != null) {
-            predicates.add(cb.equal(root.get("location"), searchRequest.getLocation()));
+            predicates.add(cb.equal(root.get("lokacija"), searchRequest.getLocation()));
 
         }
         if (searchRequest.getCategoryName() != null) {
-            predicates.add(cb.equal(root.get("categoryName"), searchRequest.getCategoryName()));
+            predicates.add(cb.equal(root.get("kategorija").get("naziv"), searchRequest.getCategoryName()));
         }
         if (searchRequest.getPriceFrom() != null) {
-            predicates.add(cb.equal(root.get("priceFrom"), searchRequest.getPriceFrom()));
+            predicates.add(cb.greaterThanOrEqualTo(root.get("cijena"), BigDecimal.valueOf(searchRequest.getPriceFrom())));
         }
+
         if (searchRequest.getPriceTo() != null) {
-            predicates.add(cb.equal(root.get("priceTo"), searchRequest.getPriceTo()));
+            predicates.add(cb.lessThanOrEqualTo(root.get("cijena"), BigDecimal.valueOf(searchRequest.getPriceTo())));
         }
+
 
         query.where(predicates.toArray(new Predicate[0]));
 
@@ -152,7 +156,8 @@ public class ProductImplService implements ProductService {
         List<Product> products = productEntities.stream().map(e -> modelMapper.map(e, Product.class)).toList();
         // Kreira Page koristeći listu proizvoda i ukupan broj proizvoda
         //return new PageImpl<>(products, page, products.size());
-        return Util.getPage(page, products);
+       // return Util.getPage(page, products);
+        return new PageImpl<>(products, page, products.size());
     }
 
     @Override
