@@ -15,8 +15,6 @@ public class UserUpdateRequest {
     @NotBlank
     private String korisnickoIme;
     @NotBlank
-    private String lozinka;
-    @NotBlank
     private String grad;
     private String avatar;
     @NotBlank
