@@ -13,8 +13,6 @@ public class UserUpdateRequest {
     @NotBlank
     private String prezime;
     @NotBlank
-    private String korisnickoIme;
-    @NotBlank
     private String grad;
     private String avatar;
     @NotBlank

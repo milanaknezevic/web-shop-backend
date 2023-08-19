@@ -122,42 +122,45 @@ public class ProductImplService implements ProductService {
         Root<ProizvodEntity> root = query.from(ProizvodEntity.class);
         List<Predicate> predicates = new ArrayList<>();
 
-        if (searchRequest.getProductStatus() != null) {
-            predicates.add(cb.equal(root.get("stanje"), searchRequest.getProductStatus()));
+        if (searchRequest.getStanjeProizvoda() != null) {
+            predicates.add(cb.equal(root.get("stanje"), searchRequest.getStanjeProizvoda()));
         }
-        if (searchRequest.getProductAttributes() != null && !searchRequest.getProductAttributes().isEmpty()) {
-            for (ProductAttribute productAttribute : searchRequest.getProductAttributes()) {
+        if (searchRequest.getProizvodAtributi() != null && !searchRequest.getProizvodAtributi().isEmpty()) {
+            for (ProductAttribute productAttribute : searchRequest.getProizvodAtributi()) {
                 predicates.add(cb.equal(
                         root.join("proizvodAtributs").get("atribut").get("id"), productAttribute.getAtribut().getId()));
                 predicates.add(cb.equal(
                         root.join("proizvodAtributs").get("vrijednost"), productAttribute.getVrijednost()));
             }
         }
-        if (searchRequest.getLocation() != null) {
-            predicates.add(cb.equal(root.get("lokacija"), searchRequest.getLocation()));
+        if (searchRequest.getLokacija() != null) {
+            predicates.add(cb.equal(root.get("lokacija"), searchRequest.getLokacija()));
 
         }
-        if (searchRequest.getCategoryName() != null) {
-            predicates.add(cb.equal(root.get("kategorija").get("naziv"), searchRequest.getCategoryName()));
+
+        if (searchRequest.getNaslov() != null) {
+            predicates.add(cb.like(root.get("naslov"), "%" + searchRequest.getNaslov() + "%"));
         }
-        if (searchRequest.getPriceFrom() != null) {
-            predicates.add(cb.greaterThanOrEqualTo(root.get("cijena"), BigDecimal.valueOf(searchRequest.getPriceFrom())));
+        if (searchRequest.getImeKategorije() != null) {
+            predicates.add(cb.equal(root.get("kategorija").get("naziv"), searchRequest.getImeKategorije()));
+        }
+        if (searchRequest.getCijenaOd() != null) {
+            predicates.add(cb.greaterThanOrEqualTo(root.get("cijena"), BigDecimal.valueOf(searchRequest.getCijenaOd())));
         }
 
-        if (searchRequest.getPriceTo() != null) {
-            predicates.add(cb.lessThanOrEqualTo(root.get("cijena"), BigDecimal.valueOf(searchRequest.getPriceTo())));
+        if (searchRequest.getCijenaDo() != null) {
+            predicates.add(cb.lessThanOrEqualTo(root.get("cijena"), BigDecimal.valueOf(searchRequest.getCijenaDo())));
         }
-
+        predicates.add(cb.equal(root.get("zavrsenaPonuda"), 0));
 
         query.where(predicates.toArray(new Predicate[0]));
-
         TypedQuery<ProizvodEntity> typedQuery = entityManager.createQuery(query);
+        int sum = typedQuery.getResultList().size();
+        typedQuery.setFirstResult((int) page.getOffset());
+        typedQuery.setMaxResults(page.getPageSize());
         List<ProizvodEntity> productEntities = typedQuery.getResultList();
         List<Product> products = productEntities.stream().map(e -> modelMapper.map(e, Product.class)).toList();
-        // Kreira Page koristeći listu proizvoda i ukupan broj proizvoda
-        //return new PageImpl<>(products, page, products.size());
-       // return Util.getPage(page, products);
-        return new PageImpl<>(products, page, products.size());
+        return new PageImpl<>(products, page, sum);
     }
 
     @Override

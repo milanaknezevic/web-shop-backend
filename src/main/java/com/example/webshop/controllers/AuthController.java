@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 public class AuthController {
@@ -27,6 +28,10 @@ public class AuthController {
     @PostMapping("insertImage")
     public String insertImage(@RequestParam(value = "file", required = false) MultipartFile file) {
         return userService.insertImage(file);
+    }
+    @PostMapping("insertImages")
+    public  List<String> insertImages(@RequestParam(value = "files", required = false) List<MultipartFile> files) {
+        return userService.insertImages(files);
     }
     @PostMapping("login")
     public LoginResponse login(@RequestBody @Valid LoginRequest request) {

@@ -14,6 +14,7 @@ import java.util.List;
 
 public interface UserService {
     List<User> findAll();
+    List<String> insertImages(List<MultipartFile> files);
 
     User findById(Integer id);
 

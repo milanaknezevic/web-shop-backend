@@ -35,6 +35,7 @@ import javax.transaction.Transactional;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -72,7 +73,9 @@ public class UserImplService implements UserService {
     private String defaultSupportLastName;
 
     @Value("${avatarDir:}")
-    private String dir;
+    private String avatarDir;
+    @Value("${productDir:}")
+    private String productsDir;
     @PersistenceContext
     private EntityManager manager;
 
@@ -117,6 +120,24 @@ public class UserImplService implements UserService {
         return userRepository.findAll().stream().map(l -> modelMapper.map(l, User.class)).collect(Collectors.toList());
     }
 
+    @Override
+    public List<String> insertImages(List<MultipartFile> files) {
+        List<String> productImages=new ArrayList<>();
+        try {
+            for(MultipartFile multipartFile:files)
+            {
+                String imageName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
+                Path imagePath = Paths.get(productsDir + imageName);
+                Files.copy(multipartFile.getInputStream(), imagePath);
+                productImages.add(imageName);
+            }
+            return productImages;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
 
     @Override
     public User findById(Integer id) {
@@ -151,8 +172,9 @@ public class UserImplService implements UserService {
     public String insertImage(MultipartFile multipartFile) {
         try {
             String name = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
-            Path path = Paths.get(dir + name);
+            Path path = Paths.get(avatarDir + name);
             Files.copy(multipartFile.getInputStream(), path);
+            System.out.println("path" + path);
             return name;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -187,8 +209,7 @@ public class UserImplService implements UserService {
     public User update(Integer id, UserUpdateRequest userRequest) throws Exception {
         KorisnikEntity korisnikEntity = userRepository.findById(id).orElseThrow(NotFoundException::new);
         korisnikEntity.setIme(userRequest.getIme());
-        korisnikEntity.setPrezime(userRequest.getPrezime());
-        korisnikEntity.setKorisnickoIme(userRequest.getKorisnickoIme());
+        korisnikEntity.setPrezime(userRequest.getPrezime());;
         korisnikEntity.setGrad(userRequest.getGrad());
         korisnikEntity.setAvatar(userRequest.getAvatar());
         korisnikEntity.setEmail(userRequest.getEmail());

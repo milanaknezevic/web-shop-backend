@@ -7,11 +7,11 @@ import java.util.List;
 
 @Data
 public class SearchRequest {
-
-    private String categoryName;
-    private String location;
-    private Boolean productStatus;
-    private Integer priceFrom;
-    private Integer priceTo;
-    private List<ProductAttribute> productAttributes;
+    private String naslov;
+    private String imeKategorije;
+    private String lokacija;
+    private Boolean stanjeProizvoda;
+    private Integer cijenaOd;
+    private Integer cijenaDo;
+    private List<ProductAttribute> proizvodAtributi;
 }

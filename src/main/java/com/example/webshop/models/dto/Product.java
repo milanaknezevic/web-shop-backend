@@ -1,5 +1,6 @@
 package com.example.webshop.models.dto;
 
+import com.example.webshop.models.entities.KorisnikEntity;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ public class Product {
     private List<Comment> komentars;
     private Category kategorija;
     private User prodavac;
+    private User kupac;
     private List<ProductAttribute> proizvodAtributs;
     private List<Image> slikas;
 }
