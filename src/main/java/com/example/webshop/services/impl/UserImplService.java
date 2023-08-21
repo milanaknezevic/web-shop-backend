@@ -122,10 +122,9 @@ public class UserImplService implements UserService {
 
     @Override
     public List<String> insertImages(List<MultipartFile> files) {
-        List<String> productImages=new ArrayList<>();
+        List<String> productImages = new ArrayList<>();
         try {
-            for(MultipartFile multipartFile:files)
-            {
+            for (MultipartFile multipartFile : files) {
                 String imageName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
                 Path imagePath = Paths.get(productsDir + imageName);
                 Files.copy(multipartFile.getInputStream(), imagePath);
@@ -195,13 +194,13 @@ public class UserImplService implements UserService {
         logerService.insertLog("User: " + user.getUsername() + " has searched his sold products.", this.getClass().getName());
 
         System.out.println("finished" + finished);
-        if (finished ==0 || finished ==1) {
+        if (finished != null) {
             return userRepository.getAllProductsForSeller(page, user.getId(), finished).map(p -> modelMapper.map(p, Product.class));
+
         } else {
             return userRepository.getAllProductsForSellerWithoutFinished(page, user.getId()).map(p -> modelMapper.map(p, Product.class));
 
         }
-
 
     }
 
@@ -209,7 +208,8 @@ public class UserImplService implements UserService {
     public User update(Integer id, UserUpdateRequest userRequest) throws Exception {
         KorisnikEntity korisnikEntity = userRepository.findById(id).orElseThrow(NotFoundException::new);
         korisnikEntity.setIme(userRequest.getIme());
-        korisnikEntity.setPrezime(userRequest.getPrezime());;
+        korisnikEntity.setPrezime(userRequest.getPrezime());
+        ;
         korisnikEntity.setGrad(userRequest.getGrad());
         korisnikEntity.setAvatar(userRequest.getAvatar());
         korisnikEntity.setEmail(userRequest.getEmail());

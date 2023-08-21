@@ -9,9 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ProductRepository extends JpaRepository<ProizvodEntity, Integer> {
 
-    @Query("SELECT p from ProizvodEntity p where p.zavrsenaPonuda=0")
+    @Query("SELECT p from ProizvodEntity p where p.zavrsenaPonuda=0 ORDER BY p.datumKreiranja DESC")
     Page<ProizvodEntity> findAllByZavrsenaPonuda(Pageable page);
-    @Query("SELECT p FROM ProizvodEntity p WHERE LOWER(p.naslov) LIKE LOWER(CONCAT('%', :naslov, '%')) and p.zavrsenaPonuda=0")
+    @Query("SELECT p FROM ProizvodEntity p WHERE LOWER(p.naslov) LIKE LOWER(CONCAT('%', :naslov, '%')) and p.zavrsenaPonuda=0 ORDER BY p.datumKreiranja DESC")
     Page<ProizvodEntity> findALlByTitleAndZavrsenaPonuda(Pageable page, String naslov);
 
 

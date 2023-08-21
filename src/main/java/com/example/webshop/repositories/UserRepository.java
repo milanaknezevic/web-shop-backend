@@ -20,12 +20,12 @@ public interface UserRepository extends JpaRepository<KorisnikEntity,Integer> {
     Optional<KorisnikEntity> findByKorisnickoImeAndStatus(String username, UserStatus status);
 
     Optional<KorisnikEntity> findByKorisnickoIme(String username);
-    @Query("SELECT p FROM ProizvodEntity p WHERE p.kupac.id=:id and p.zavrsenaPonuda=1")
+    @Query("SELECT p FROM ProizvodEntity p WHERE p.kupac.id=:id and p.zavrsenaPonuda=1 ORDER BY p.datumKreiranja DESC")
     Page<ProizvodEntity> getAllProductsForBuyer(Pageable page, Integer id);
 
-    @Query("SELECT p FROM ProizvodEntity p WHERE p.prodavac.id=:id and p.zavrsenaPonuda=:finished")
+    @Query("SELECT p FROM ProizvodEntity p WHERE p.prodavac.id=:id and p.zavrsenaPonuda=:finished ORDER BY p.datumKreiranja DESC")
     Page<ProizvodEntity> getAllProductsForSeller(Pageable page,Integer id,Integer finished);
-    @Query("SELECT p FROM ProizvodEntity p WHERE p.prodavac.id=:id")
+    @Query("SELECT p FROM ProizvodEntity p WHERE p.prodavac.id=:id ORDER BY p.datumKreiranja DESC")
     Page<ProizvodEntity> getAllProductsForSellerWithoutFinished(Pageable page,Integer id);
 
 
