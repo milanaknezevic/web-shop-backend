@@ -40,7 +40,6 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                     .setSigningKey(authorizationSecret)
                     .parseClaimsJws(token)
                     .getBody();
-            System.out.println("claims " + claims);
             JwtUser jwtUser = new JwtUser(Integer.valueOf(claims.getId()), claims.getSubject(), null, UserStatus.valueOf(claims.get("userStatus", String.class)));
             Authentication authentication = new UsernamePasswordAuthenticationToken(jwtUser, null, jwtUser.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);

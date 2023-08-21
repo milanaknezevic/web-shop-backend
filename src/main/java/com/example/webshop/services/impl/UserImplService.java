@@ -193,7 +193,6 @@ public class UserImplService implements UserService {
         JwtUser user = (JwtUser) authentication.getPrincipal();
         logerService.insertLog("User: " + user.getUsername() + " has searched his sold products.", this.getClass().getName());
 
-        System.out.println("finished" + finished);
         if (finished != null) {
             return userRepository.getAllProductsForSeller(page, user.getId(), finished).map(p -> modelMapper.map(p, Product.class));
 
