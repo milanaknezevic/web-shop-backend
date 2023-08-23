@@ -4,6 +4,7 @@ import com.example.webshop.exceptions.BadRequestException;
 import com.example.webshop.exceptions.ConflictException;
 import com.example.webshop.exceptions.NotFoundException;
 import com.example.webshop.models.dto.JwtUser;
+import com.example.webshop.models.dto.LoginResponse;
 import com.example.webshop.models.dto.Product;
 import com.example.webshop.models.dto.User;
 import com.example.webshop.models.entities.AdminEntity;
@@ -19,6 +20,9 @@ import com.example.webshop.repositories.UserRepository;
 import com.example.webshop.services.AuthService;
 import com.example.webshop.services.LogerService;
 import com.example.webshop.services.UserService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.java.Log;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -36,6 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -76,6 +81,13 @@ public class UserImplService implements UserService {
     private String avatarDir;
     @Value("${productDir:}")
     private String productsDir;
+
+
+
+    @Value("${authorization.token.expiration-time}")
+    private String tokenExpirationTime;
+    @Value("${authorization.token.secret}")
+    private String tokenSecret;
     @PersistenceContext
     private EntityManager manager;
 
@@ -160,12 +172,29 @@ public class UserImplService implements UserService {
     }
 
     @Override
-    public User activateAccount(String username) {
+    public LoginResponse activateAccount(String username) {
         KorisnikEntity userEntity = userRepository.findByKorisnickoImeAndStatus(username, UserStatus.REQUESTED).orElseThrow(NotFoundException::new);
         userEntity.setStatus(UserStatus.ACTIVE);
-        logerService.insertLog("User: " + userEntity.getKorisnickoIme() + " has activated profile.", this.getClass().getName());
-        return modelMapper.map(userRepository.saveAndFlush(userEntity), User.class);
+
+        userEntity=userRepository.saveAndFlush(userEntity);
+        LoginResponse loginResponse=modelMapper.map(userEntity,LoginResponse.class);
+        loginResponse.setToken(generateJwt(userEntity));
+
+        logerService.insertLog("User: " + userEntity.getKorisnickoIme() + " has activated profile and logged into system.", this.getClass().getName());
+        return loginResponse;
     }
+    private String generateJwt(KorisnikEntity korisnikEntity) {
+        return Jwts.builder()
+                .setId(korisnikEntity.getId().toString())
+                .setSubject(korisnikEntity.getKorisnickoIme())
+                .claim("userStatus", korisnikEntity.getStatus().name())
+                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(tokenExpirationTime)))
+                .signWith(SignatureAlgorithm.HS512, tokenSecret)
+                .compact();
+    }
+
+
+
 
     @Override
     public String insertImage(MultipartFile multipartFile) {

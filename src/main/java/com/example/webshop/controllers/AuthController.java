@@ -44,7 +44,7 @@ public class AuthController {
     }
 
     @PostMapping("activeAccount")
-    public User activeAccount(@RequestBody @Valid AccountActivationRequest accountActivationRequest) {
+    public LoginResponse activeAccount(@RequestBody @Valid AccountActivationRequest accountActivationRequest) {
         if (authService.activateAccount(accountActivationRequest)) {
             return userService.activateAccount(accountActivationRequest.getKorisnickoIme());
         }

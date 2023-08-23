@@ -1,8 +1,10 @@
 package com.example.webshop.services;
 
+import com.example.webshop.models.dto.LoginResponse;
 import com.example.webshop.models.dto.Product;
 import com.example.webshop.models.dto.User;
 import com.example.webshop.models.requests.ChangePasswordRequest;
+import com.example.webshop.models.requests.LoginRequest;
 import com.example.webshop.models.requests.SignUpRequest;
 import com.example.webshop.models.requests.UserUpdateRequest;
 import org.springframework.data.domain.Page;
@@ -19,7 +21,7 @@ public interface UserService {
     User findById(Integer id);
 
     void signUp(SignUpRequest request);
-    User activateAccount(String username);
+    LoginResponse activateAccount(String username);
 
     Page<Product> getAllProductsForBuyer(Pageable page, Authentication authentication);
 
