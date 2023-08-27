@@ -1,7 +1,7 @@
 package com.example.webshop.exceptions;
 
 import org.springframework.http.HttpStatus;
-
+//400
 public class BadRequestException extends HttpException {
 
     public BadRequestException() {

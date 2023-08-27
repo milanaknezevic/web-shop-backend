@@ -1,5 +1,5 @@
 package com.example.webshop.exceptions;
-
+//404
 import org.springframework.http.HttpStatus;
 
 import java.net.HttpRetryException;

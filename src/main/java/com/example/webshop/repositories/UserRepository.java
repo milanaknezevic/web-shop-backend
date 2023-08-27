@@ -16,7 +16,6 @@ public interface UserRepository extends JpaRepository<KorisnikEntity,Integer> {
     Boolean existsByKorisnickoIme(String korisnickoIme);
     Boolean existsByEmail(String email);
     List<KorisnikEntity> findAll();
-   // List<KorisnikEntity> findAllByRolaAndStatus(Role role, UserStatus status);
     Optional<KorisnikEntity> findByKorisnickoImeAndStatus(String username, UserStatus status);
 
     Optional<KorisnikEntity> findByKorisnickoIme(String username);
